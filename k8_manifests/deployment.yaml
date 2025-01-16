@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+  template:
+    metadata:
+      labels:
+        app: web-app
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pool
+                operator: In
+                values:
+                - secondary
+      containers:
+      - name: web-app
+        image: nginx
+        resources:
+          requests:
+            cpu: "400m"    # Moderate CPU request
+            memory: "200Mi" # Moderate memory request
+          limits:
+            cpu: "800m"    # Limit to prevent overuse
+            memory: "512Mi"
+        ports:
+        - containerPort: 80
